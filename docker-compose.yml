@@ -1,0 +1,76 @@
+version: '3'
+
+# хранилища
+#volumes:
+#    pgdata:
+#        driver: local
+services:
+#    pupeteer:
+#        build:
+#            context: .
+#            dockerfile: skip/docker/Dockerfile
+##        restart: always
+#        expose:
+#            - 8001
+#        volumes:
+#            - ./skip/puppeteer:/srv
+#        ports:
+#            - 8001:8001
+#    nginx:
+# при падении будет стараться подняться
+#        restart: always
+# только свежий nginx
+#        image: nginx:latest
+# слушает порт 8080
+#        expose:
+#          - 8080
+# мапаем порт 80 на его 8080. Тогда сайт будет доступен по адресу localhost. Убедись, что порт у тебя не занят.
+#        ports:
+#          - "80:8080"
+# монтируем только те директории, в которых лежит статика, т.к. nginx с динамикой не будет работать. Также директорию с логами и файл настройки, который мы подготовили.
+#        volumes:
+#            - ./<project>/static:/srv/www/<project>/static
+#            - ./<project>/media:/srv/www/<project>/media
+#            - ./<project>/logs:/srv/www/<project>/logs
+#            - ./docker/nginx:/etc/nginx/conf.d
+# и nginx зависит от контейнера python. Т.е. python должен быть запущен первым
+#        depends_on:
+#            - python
+    python:
+# указываем откуда собирать образ
+        build:
+            context: ..
+            dockerfile: docker/Dockerfile
+#        env_file:
+#            - skip/docker/app.env
+        restart: always
+# монтируем директорию проекта
+        # запускаем django
+        volumes:
+            - .:/var/www/skip:rw
+        expose:
+            - 8000
+        ports:
+            - 8000:8000
+#        command: "mc"
+        command: "skip/manage.py runserver 0.0.0.0:8000"
+        environment:
+            - DB_HOST=${DB_HOST}
+            - DB_NAME=${DB_NAME}
+            - DB_USER=${DB_USER}
+            - DB_PASS=${DB_PASS}
+            - DB_PORT=${DB_PORT}
+#        depends_on:
+#            - postgres
+#    postgres:
+##  логин, пароль, БД, порты и т.д.
+#        image: postgres
+#        ports:
+#            - 5432:5432
+#        environment:
+#            POSTGRES_USER: admin
+#            POSTGRES_PASSWORD: 121314
+#            POSTGRES_DB: test
+#            PGDATA: /var/lib/postgresql/data
+#        volumes:
+#            - pgdata:/var/lib/postgresql/data

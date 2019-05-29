@@ -1,0 +1,15 @@
+{
+  "name": "fssp",
+  "version": "1.0.0",
+  "description": "1)Архитектурные файлы\r     а)openForm.js (точка начала приложения и логика парсинга)\r     б)result.txt (файл с логом) можно вынести в любое место и поменять параметр log_path в openForm.js\r 2) Запуск робота\r     а) Через командную строку от root или sudo: phantomjs /var/www/html/fssp/openForm.js\r     б) Каждый час",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^1.14.0",
+    "request": "^2.88.0"
+  }
+}
