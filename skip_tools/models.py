@@ -48,7 +48,7 @@ class FilePackage(models.Model):
                         select 
                             fp.object_id,
                             a.last_name||' '||a.first_name||' '||a.middle_name fio,
-                            a.last_name||' '||a.first_name||' '||a.middle_name||'|'||to_char(a.birthday, 'dd.mm.yyyy') search_str,
+                            a.last_name||'|'||a.first_name||'|'||a.middle_name||'|'||to_char(a.birthday, 'dd.mm.yyyy') search_str,
                             to_char(a.birthday, 'dd.mm.yyyy') search_date 
                         from skip.skip_tools_filepackage fp
                         join sys.v_agreement_card a ON a.agreement_id=fp.object_id
