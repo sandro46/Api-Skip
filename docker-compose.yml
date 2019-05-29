@@ -41,8 +41,8 @@ services:
         build:
             context: ..
             dockerfile: docker/Dockerfile
-#        env_file:
-#            - skip/docker/app.env
+        env_file:
+            - skip/docker/app.env
         restart: always
 # монтируем директорию проекта
         # запускаем django
