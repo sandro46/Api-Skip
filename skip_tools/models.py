@@ -114,12 +114,14 @@ class Search(models.Model):
                 where refsource_id=%s
                       and s.date_search is null
                       and s.date_parsed is null
+                      and batch_id is null
                 order by task.prio, task.start_dt
                 limit %s
             )
     
             update skip.skip_tools_search s
-            SET batch_id = t.batch_id1
+            SET batch_id = t.batch_id1,
+                date_search=current_date
             from t
             where
                 t.id = s.id

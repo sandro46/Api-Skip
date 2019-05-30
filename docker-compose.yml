@@ -39,10 +39,8 @@ services:
     python:
 # указываем откуда собирать образ
         build:
-            context: ..
+            context: .
             dockerfile: docker/Dockerfile
-        env_file:
-            - skip/docker/app.env
         restart: always
 # монтируем директорию проекта
         # запускаем django
@@ -53,7 +51,7 @@ services:
         ports:
             - 8000:8000
 #        command: "mc"
-        command: "skip/manage.py runserver 0.0.0.0:8000"
+        command: "python manage.py runserver 0.0.0.0:8000"
         environment:
             - DB_HOST=${DB_HOST}
             - DB_NAME=${DB_NAME}

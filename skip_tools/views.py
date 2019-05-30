@@ -1,8 +1,8 @@
+import json, requests, time
 from datetime import datetime
-import json, csv
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions, status
+from rest_framework import status
 from skip_tools.models import Task, Search, Template, FilePackage, RefSource
 from skip_tools.serializers import TaskSerialize, SearchSerialize, TemplatesSerialize
 
@@ -23,10 +23,46 @@ class Tasks(APIView):
 
 class Capcha(APIView):
     def post(self, request):
-        # req = json.dumps(request.data)
-        # print('[i[ Request data is ', request.data)
-        print('[i[ Capcha code is ', request.data['capcha_img'])
-        return Response({"payload": 'ok'})
+        try:
+            capcha = request.data['capcha_img']
+        except KeyError:
+            return Response({"payload": {'err': "capcha_img can`t be empty "}}, status=status.HTTP_400_BAD_REQUEST)
+        params = {
+            'key': '2df8c426d6637dc8969b5a5d5255991b',
+            'method': 'base64',
+            'phrase': 0,
+            'regsense': 0,
+            'numeric': 4,
+            'min_len': 5,
+            'max_len': 5,
+            'language': 1,
+            'json': 1,
+            'body': capcha
+        }
+        response = requests.post("http://rucaptcha.com/in.php", params)
+        res = response.json()
+        print('[i] Respone1 of recognize capcha is ', res)
+        failed = True
+        params = {
+            'key': '2df8c426d6637dc8969b5a5d5255991b',
+            'action': 'get',
+            'json': 1,
+            'id': res['request']
+        }
+        for i in range(7):
+            time.sleep(5)
+            response = requests.get("http://rucaptcha.com/res.php", params)
+            assert response.status_code == 200
+            if response.status_code == 200:
+                res = response.json()
+                print('[i] Response capcha result is', res)
+                if res['status'] == 1:
+                    failed = False
+                    break
+        if failed:
+            return Response({"payload": {'err': "Can`t recognize capcha "}}, status=status.HTTP_404_NOT_FOUND)
+        print('[i] Respone2 of recognize capcha is ', res)
+        return Response({"payload": res['request']})
 
 
 class SearchItems(APIView):
