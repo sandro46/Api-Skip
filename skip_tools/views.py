@@ -3,8 +3,9 @@ from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from skip_tools.models import Task, Search, Template, FilePackage, RefSource
+from skip_tools.models import Task, Search, Template, FilePackage, RefSource, Result, FoundMap
 from skip_tools.serializers import TaskSerialize, SearchSerialize, TemplatesSerialize
+from django.db.models.functions import Now
 
 # Create your views here.
 
@@ -72,6 +73,28 @@ class SearchItems(APIView):
         limit = request.GET.get("limit")
         items = Search.getBatch(source_id=source_id, limit=limit)
         return Response({"payload": items})
+
+    def post(self, request):
+        req = request.data
+        print('[i] Search Items Post contains id is: ', req['id'])
+        search_item = Search.objects.filter(id=req['id']).first()
+        if 'data' in req:
+            fm = FoundMap.objects.create(search=search_item, url=req['requestUrl'])
+            fm.save()
+            insert_list = []
+            i = 1
+            for row in req['data']:
+                print('[i]Row in data is ', row)
+                for key in row:
+                    insert_list.append(
+                        Result(found=fm, data_set_num=i, data_type=key, data_value=row[key])
+                    )
+                i += 1
+            result_list = Result.objects.bulk_create(insert_list)
+            print('[i] Result bulk create result is ', result_list)
+        search_item.date_parsed = Now()
+        search_item.save()
+        return Response({"payload": 'ok'})
 
 
 class Templates(APIView):

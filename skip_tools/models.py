@@ -121,7 +121,7 @@ class Search(models.Model):
     
             update skip.skip_tools_search s
             SET batch_id = t.batch_id1,
-                date_search=current_date
+                date_search=current_timestamp
             from t
             where
                 t.id = s.id
@@ -150,7 +150,7 @@ class TaskFiles(models.Model):
 class FoundMap(models.Model):
 
     search = models.ForeignKey(Search, verbose_name="Ссылка на единицу поиска", related_name="fk_found_search", on_delete=models.CASCADE, null=True)
-    url = models.CharField("Адрес страницы или другой идентификатор, по которому было что то найдено", max_length=511, unique=True)
+    url = models.TextField("Адрес страницы или другой идентификатор, по которому было что то найдено", unique=True)
     created = models.DateTimeField("Дата создания", auto_now_add=True, null=True)
 
     class Meta:
@@ -160,6 +160,7 @@ class FoundMap(models.Model):
 class Result(models.Model):
 
     found = models.ForeignKey(FoundMap, verbose_name="Ссылка на карту найденных", related_name="fk_result_found", on_delete=models.CASCADE, null=True)
+    data_set_num = models.IntegerField("Порядковый номер набора результатов", null=True)
     data_type = models.CharField("Тип ", max_length=255, null=True)
     data_value = models.TextField("Значение", null=True)
     created = models.DateTimeField("Дата создания", auto_now_add=True, null=True)

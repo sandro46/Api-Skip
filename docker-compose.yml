@@ -51,7 +51,7 @@ services:
         ports:
             - 8000:8000
 #        command: "mc"
-        command: "python manage.py runserver 0.0.0.0:8000"
+        command: "python -u manage.py  runserver 0.0.0.0:8000"
         environment:
             - DB_HOST=${DB_HOST}
             - DB_NAME=${DB_NAME}
