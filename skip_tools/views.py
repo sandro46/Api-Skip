@@ -78,9 +78,9 @@ class SearchItems(APIView):
         req = request.data
         print('[i] Search Items Post contains id is: ', req['id'])
         search_item = Search.objects.filter(id=req['id']).first()
+        fm = FoundMap.objects.create(search=search_item, url=req['requestUrl'])
+        fm.save()
         if 'data' in req:
-            fm = FoundMap.objects.create(search=search_item, url=req['requestUrl'])
-            fm.save()
             insert_list = []
             i = 1
             for row in req['data']:
