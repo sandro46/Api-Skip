@@ -71,6 +71,7 @@ class SearchItems(APIView):
     def get(self, request):
         source_id = request.GET.get("source_id")
         limit = request.GET.get("limit")
+        search_id=
         items = Search.getBatch(source_id=source_id, limit=limit)
         return Response({"payload": items})
 
@@ -84,17 +85,19 @@ class SearchItems(APIView):
             insert_list = []
             i = 1
             for row in req['data']:
-                row['ip_doc_dt'] = re.findall('[0-9]{2}\.[0-9]{2}\.[0-9]{4}', row['ip_req'])
-                row['ip_doc_dt'] = row['ip_doc_dt'][0] if len(row['ip_doc_dt']) > 0 else ''
+                if row.get('ip_req'):
+                    row['ip_doc_dt'] = re.findall('[0-9]{2}\.[0-9]{2}\.[0-9]{4}', row['ip_req'])
+                    row['ip_doc_dt'] = row['ip_doc_dt'][0] if len(row['ip_doc_dt']) > 0 else ''
+                    row['ip_doc_no'] = re.findall('№.+$', row['ip_req'])
+                    row['ip_doc_no'] = row['ip_doc_no'][0] if len(row['ip_doc_no']) > 0 else ''
 
-                row['ip_doc_no'] = re.findall('№.+$', row['ip_req'])
-                row['ip_doc_no'] = row['ip_doc_no'][0] if len(row['ip_doc_no']) > 0 else ''
+                if row.get('debt_summ_reason'):
+                    row['debt_summ'] = re.findall('[0-9]+\.[0-9]{2}', row['debt_summ_reason'])
+                    row['debt_summ'] = row['debt_summ'][0] if len(row['debt_summ']) > 0 else ''
 
-                row['debt_summ'] = re.findall('[0-9]+\.[0-9]{2}', row['debt_summ_reason'])
-                row['debt_summ'] = row['debt_summ'][0] if len(row['debt_summ']) > 0 else ''
-
-                row['isp_summ'] = re.findall('[0-9]+\.[0-9]{2}', row['isp_summ_reason'])
-                row['isp_summ'] = row['isp_summ'][0] if len(row['isp_summ']) > 0 else ''
+                if row.get('isp_summ_reason'):
+                    row['isp_summ'] = re.findall('[0-9]+\.[0-9]{2}', row['isp_summ_reason'])
+                    row['isp_summ'] = row['isp_summ'][0] if len(row['isp_summ']) > 0 else ''
 
                 print('[i]Row in data is ', row)
                 for key in row:
