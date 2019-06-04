@@ -71,7 +71,6 @@ class SearchItems(APIView):
     def get(self, request):
         source_id = request.GET.get("source_id")
         limit = request.GET.get("limit")
-        search_id=
         items = Search.getBatch(source_id=source_id, limit=limit)
         return Response({"payload": items})
 
