@@ -1,11 +1,14 @@
 import json, requests, time, re
-from datetime import datetime
+from datetime import datetime, timedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from skip_tools.models import Task, Search, Template, FilePackage, RefSource, Result, FoundMap
-from skip_tools.serializers import TaskSerialize, SearchSerialize, TemplatesSerialize
+from skip_tools.models import Task, Search, Template, FilePackage, RefSource, Result, FoundMap, WebKey
+from skip_tools.serializers import TaskSerialize, SearchSerialize, TemplatesSerialize, WebKeySerialize
+from django.core import serializers
 from django.db.models.functions import Now
+from django.db.models import Q
+
 
 # Create your views here.
 
@@ -13,13 +16,23 @@ def decode_utf8(input_iterator):
     for l in input_iterator:
         yield l.decode('utf-8')
 
+class WebKeys(APIView):
+    def get(self, request):
+        limit = int(request.GET.get("limit")) if request.GET.get("limit") else 1
+        source_id = request.GET.get("source_id")
+        dt = datetime.now() - timedelta(seconds=300)
+        wk = WebKey.objects.filter(Q(source_id=source_id), Q(status=1), Q(date_del__isnull=True), Q(last_used__gte = dt) | Q(last_used__isnull=True))\
+                                .all().order_by("last_used")[:limit]
+        serializer = WebKeySerialize(wk, many=True)
+        return Response({"payload": serializer.data})
+
 
 class Tasks(APIView):
 
     def get(self, request):
         obj = Task.objects.all()
         serializer = TaskSerialize(obj, many=True)
-        return Response({"payload12": serializer.data})
+        return Response({"payload": serializer.data})
 
 
 class Capcha(APIView):
@@ -203,7 +216,7 @@ class FilePackages(APIView):
         csv_file = request.FILES['file']
 
         if csv_file.multiple_chunks():
-            return Response({"payload": {'err': "Uploaded file is too big "}}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"payload": {'err': "Uploaded file is big "}}, status=status.HTTP_400_BAD_REQUEST)
 
         lines = csv_file.read().decode('windows-1251').splitlines()
         ids = []

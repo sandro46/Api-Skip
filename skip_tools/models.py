@@ -47,8 +47,8 @@ class FilePackage(models.Model):
         cursor.execute("""	
                         select 
                             fp.object_id,
-                            a.last_name||' '||a.first_name||' '||a.middle_name fio,
-                            a.last_name||'|'||a.first_name||'|'||a.middle_name||'|'||to_char(a.birthday, 'dd.mm.yyyy') search_str,
+                            a.last_name||' '||a.first_name||(case when a.middle_name is not null then ' '||a.middle_name else '' end) fio,
+                            a.last_name||'|'||a.first_name||(case when a.middle_name is not null then '|'||a.middle_name else '' end)||'|'||to_char(a.birthday, 'dd.mm.yyyy') search_str,
                             to_char(a.birthday, 'dd.mm.yyyy') search_date 
                         from skip.skip_tools_filepackage fp
                         join sys.v_agreement_card a ON a.agreement_id=fp.object_id
@@ -169,8 +169,8 @@ class Result(models.Model):
         verbose_name = "Результат поиска"
 
 
-class web_keys(models.Model):
-    website = models.CharField(max_length=255)
+class WebKey(models.Model):
+    source = models.ForeignKey(RefSource, verbose_name="Ссылка на источник", on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255, null=True)
     provider = models.CharField("Название провайдера, предоставившего ключ", max_length=255, null=True)
     status = models.IntegerField("1 - активен, 0 - неактивен", default=1)

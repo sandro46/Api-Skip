@@ -46,6 +46,8 @@ services:
         # запускаем django
         volumes:
             - .:/var/www/skip:rw
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
         expose:
             - 8000
         ports:

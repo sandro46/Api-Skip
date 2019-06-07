@@ -1,7 +1,14 @@
 from rest_framework import serializers
 
 # from django.contrib.auth.models import User
-from skip_tools.models import Task, Search, Template, FilePackage
+from skip_tools.models import Task, Search, Template, FilePackage, WebKey
+
+
+class WebKeySerialize(serializers.ModelSerializer):
+
+    class Meta:
+        model = WebKey
+        fields = ('id', 'source', 'status', 'proxy_addr', 'proxy_user', 'proxy_pass')
 
 
 class TaskSerialize(serializers.ModelSerializer):
@@ -10,7 +17,6 @@ class TaskSerialize(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ("id", "template_id", "search_type", "is_ok", "prio")
-
 
 
 class SearchSerialize(serializers.ModelSerializer):

@@ -10,8 +10,19 @@ server_addr = 'http://127.0.0.1:8000/api/v1'
 
 pytestmark = pytest.mark.django_db
 
+class TestWebKeys:
+    def test_get_web_keys_returns_set(self):
+        params = {
+            "limit": 2,
+            "source_id": 39
+        }
+        response = client.get(server_addr+'/web-keys', params)
+        res = response.json()
+        print('[tes_get_web_keys_returns_set Respone is ', res)
+        assert response.status_code == 200
 
 
+@pytest.mark.skip(reason="Temporary skip")
 class TestCapcha:
     @pytest.mark.skip(reason="Temporary skip")
     def test_recapcha_api_returns_result(self):
@@ -64,7 +75,7 @@ class TestCapcha:
         assert response.status_code == 200
         assert res['payload'] == 'жт5ж7'
 
-@pytest.mark.incremental
+@pytest.mark.skip(reason="Temporary skip")
 class TestSearch:
 
     def test_get_SearchItems_returns_200_ok(self):

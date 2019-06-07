@@ -7,4 +7,5 @@ urlpatterns = [
     path('template', Templates.as_view()),
     path('file-package', FilePackages.as_view()),
     path('capcha-recognize', Capcha.as_view()),
+    path('web-keys', WebKeys.as_view()),
 ]
