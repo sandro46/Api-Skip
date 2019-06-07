@@ -138,8 +138,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-try:
-    from skip.local_settings import *
-except ImportError:
-    from skip.prod_settings import *
