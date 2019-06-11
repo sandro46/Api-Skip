@@ -182,5 +182,24 @@ class WebKey(models.Model):
     date_del = models.DateTimeField("Дата удаления", null=True)
     batch_id = models.IntegerField("Индентификатор пачки для многопоточности", null=True)
 
+    @staticmethod
+    def getWk(**kwargs):
+        cursor = connection.cursor()
+        sql = """
+                UPDATE skip.skip_tools_webkey
+                set n_requests = n_requests+1,
+                    last_used = current_timestamp
+                where id in (
+                    select id from skip.skip_tools_webkey
+                    where current_timestamp - last_used > '5 minutes'::interval
+                            and source_id=%s
+                    order by last_used
+                    limit %s
+                )
+                returning *
+        """
+        cursor.execute(sql, params=[kwargs['source_id'], kwargs['limit']])
+        return dictfetchall(cursor)
+
     class Meta:
         verbose_name = "Логины пользователей, прокси адреса"

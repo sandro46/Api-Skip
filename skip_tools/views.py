@@ -7,7 +7,7 @@ from skip_tools.models import Task, Search, Template, FilePackage, RefSource, Re
 from skip_tools.serializers import TaskSerialize, SearchSerialize, TemplatesSerialize, WebKeySerialize
 from django.core import serializers
 from django.db.models.functions import Now
-from django.db.models import Q
+from django.db.models import Q, F
 
 
 # Create your views here.
@@ -20,11 +20,8 @@ class WebKeys(APIView):
     def get(self, request):
         limit = int(request.GET.get("limit")) if request.GET.get("limit") else 1
         source_id = request.GET.get("source_id")
-        dt = datetime.now() - timedelta(seconds=300)
-        wk = WebKey.objects.filter(Q(source_id=source_id), Q(status=1), Q(date_del__isnull=True), Q(last_used__gte = dt) | Q(last_used__isnull=True))\
-                                .all().order_by("last_used")[:limit]
-        serializer = WebKeySerialize(wk, many=True)
-        return Response({"payload": serializer.data})
+        res = WebKey.getWk(source_id=source_id, limit=limit)
+        return Response({"payload": res})
 
 
 class Tasks(APIView):
