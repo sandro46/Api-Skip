@@ -88,14 +88,31 @@ class Task(models.Model):
 class Search(models.Model):
     """Model of skip search log"""
 
-    fio = models.CharField(max_length=50)
-    search_str = models.CharField(max_length=50)
+    fio = models.CharField(max_length=255)
+    search_str = models.CharField(max_length=255)
     search_date = models.DateTimeField()
     batch_id = models.IntegerField("Индентификатор пачки для многопоточности", null=True)
     task = models.ForeignKey(Task, verbose_name="Блок поиска", related_name="fk_search_task", on_delete=models.CASCADE, null=True)
     person_id = models.IntegerField()
     date_search = models.DateTimeField("Дата поиска", null=True)
     date_parsed = models.DateTimeField("Дата парсинга", null=True)
+
+    @staticmethod
+    def realeaseFrozenBatch(**kwargs):
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """update skip.skip_tools_search
+                set batch_id=null,
+                    date_search=null
+                where batch_id is not null
+                        and date_search is not null
+                        and date_parsed is  null
+                        and current_timestamp - date_search > '%s minutes'::interval """,
+            params=[kwargs['ttl']]
+        )
+
+        return True
 
     @staticmethod
     def getBatch(**kwargs):

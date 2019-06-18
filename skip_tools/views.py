@@ -75,6 +75,13 @@ class Capcha(APIView):
         print('[i] Respone2 of recognize capcha is ', res)
         return Response({"payload": res['request']})
 
+class ReleaseFrozenButch(APIView):
+
+    def get(self, request):
+        ttl = int(request.GET.get("ttl")) if request.GET.get("ttl") else 10
+        Search.realeaseFrozenBatch(ttl=ttl)
+        return Response({"payload": "OK"})
+
 
 class SearchItems(APIView):
 

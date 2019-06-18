@@ -8,4 +8,5 @@ urlpatterns = [
     path('file-package', FilePackages.as_view()),
     path('capcha-recognize', Capcha.as_view()),
     path('web-keys', WebKeys.as_view()),
+    path('release-frozen-batch', ReleaseFrozenButch.as_view()),
 ]

@@ -10,6 +10,19 @@ server_addr = 'http://127.0.0.1:8000/api/v1'
 
 pytestmark = pytest.mark.django_db
 
+class TestReleaseFrozenButsches:
+    def test_release_frozen_butches_returns_200ok(self):
+        params = {
+            "ttl": 2,
+            "source_id": 39
+        }
+        response = client.get(server_addr+'/release-frozen-batch', params)
+        res = response.json()
+        print('[test_release_frozen_butches_returns Respone is ', res)
+        assert response.status_code == 200
+
+
+@pytest.mark.skip(reason="Temporary skip")
 class TestWebKeys:
     def test_get_web_keys_returns_set(self):
         params = {
