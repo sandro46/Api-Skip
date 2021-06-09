@@ -4,7 +4,7 @@ certifi==2019.3.9
 chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
-Django==2.2
+Django==2.2.22
 django-cors-headers==2.5.2
 django-orm-serializer==0.1
 django-pg-current-timestamp==0.2.4
